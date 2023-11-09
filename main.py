@@ -66,8 +66,21 @@ def follow_user(user_in, followers):
 
 
 
-def unfollow_user():
-    pass
+def unfollow_user(user_in, unfollowers):
+
+    user_document = users_collection.find_one({"username": user_in})
+    if "followers" in user_document:
+        followers_list = user_document.get("followers", [])
+    else:
+        followers_list = []
+    if unfollowers in followers_list:
+        followers_list.remove(unfollowers)
+        users_collection.update_one(
+            {"username": user_in},
+            {"$set": {"followers": followers_list}}
+        )
+    else:
+        print("{}, you don't have {} in your followers".format(user_in,unfollowers))
 
 def user_exist(username):
     existing_user = users_collection.find_one({"username": username})
@@ -99,7 +112,7 @@ if post_answer == "Y":
         post_messages(main_user,message)
 
 elif post_answer == "N":
-    print("Good buy")
+    print("May be next time ...")
 
 follow_answer1 = input("Do you want to follow users? Y/N")
 
@@ -111,7 +124,18 @@ if follow_answer1 == "Y":
         print("We dont have that user in our media")
 
 if follow_answer1 == "N":
-    print('Thank you')
+    print('May be next time ...')
+
+follow_answer3 = input("Do you want to unfollow users? Y/N")
+
+if follow_answer3 == "Y":
+    follow_answer4 = input("Which user do you want to unfollow?")
+    if user_exist(follow_answer4) is not None:
+        unfollow_user(main_user, follow_answer4)
+    else:
+        print("We dont have {} user in our media".format(follow_answer4))
+
+
 
 
 
@@ -125,8 +149,4 @@ for task in tasks:
     print(task)
 client.close()
 
-"""
-query = {'_id': ObjectId('654cce8dca701b31c7660f52')}
-new_values = {"$set": {"followers": ['tatyana_ost']}}
-users_collection.update_one(query, new_values)
-"""
+
