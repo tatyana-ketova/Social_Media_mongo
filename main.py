@@ -50,12 +50,28 @@ def post_messages(main_user, message):
         insert_result = posts_collection.insert_one(data)
         print('You {} wrote post successfully'.format(main_user))
 
-def follow_user():
-    pass
+def follow_user(user_in, followers):
+
+    user_document = users_collection.find_one({"username": user_in})
+    if "followers" in user_document:
+        followers_list = user_document.get("followers", [])
+    else:
+        followers_list = []
+    followers_list.append(followers)
+    users_collection.update_one(
+        {"username": user_in},
+        {"$set": {"followers": followers_list}}
+    )
+
+
 
 
 def unfollow_user():
     pass
+
+def user_exist(username):
+    existing_user = users_collection.find_one({"username": username})
+    return existing_user
 
 
 main_user = " "
@@ -77,13 +93,27 @@ elif login_answer == "N":
     print("Good buy")
 
 post_answer = input("Do you want to write message? Y/N")
-if login_answer == "Y":
+if post_answer == "Y":
     if main_user != " ":
         message = input("Write your message {}".format(main_user))
         post_messages(main_user,message)
 
-elif login_answer == "N":
+elif post_answer == "N":
     print("Good buy")
+
+follow_answer1 = input("Do you want to follow users? Y/N")
+
+if follow_answer1 == "Y":
+    follow_answer2 = input("Which user do you want to follow?")
+    if user_exist(follow_answer2) is not None:
+        follow_user(main_user, follow_answer2)
+    else:
+        print("We dont have that user in our media")
+
+if follow_answer1 == "N":
+    print('Thank you')
+
+
 
 print("Posts")
 tasks = posts_collection.find()
@@ -94,3 +124,9 @@ tasks = users_collection.find()
 for task in tasks:
     print(task)
 client.close()
+
+"""
+query = {'_id': ObjectId('654cce8dca701b31c7660f52')}
+new_values = {"$set": {"followers": ['tatyana_ost']}}
+users_collection.update_one(query, new_values)
+"""
