@@ -35,7 +35,7 @@ def user_registration(username, email, password):
 def user_login(username, password):
     users = users_collection.find_one(username, password)
     if users == {}:
-        print('there is no user {} os password not right')
+        print('there is no user {} or password not right')
     else:
         print('You {} are login in successfully'.format(username))
         return username
@@ -86,9 +86,20 @@ def user_exist(username):
     existing_user = users_collection.find_one({"username": username})
     return existing_user
 
+def show_favorite(username):
+    user_document = users_collection.find_one({"username": username})
+    followers_list = user_document.get("followers", [])
+    for follower in followers_list:
+        follower_posts = posts_collection.find({"username": follower})
+        for post in follower_posts:
+            print("post of {}:".format(follower))
+            print(post["message"])
+
+
+
 
 main_user = " "
-regist_answer = input("Do you want to registered? Y/N")
+regist_answer = input("Do you want to registered? Y/N ")
 if regist_answer == "Y":
     username = input("Write your login")
     email = input("Write your email")
@@ -97,7 +108,7 @@ if regist_answer == "Y":
 elif regist_answer == "N":
     print("Good buy")
 
-login_answer = input("Do you want to login in? Y/N")
+login_answer = input("Do you want to login in? Y/N ")
 if login_answer == "Y":
     username = input("Write your login")
     password = input("Write your password")
@@ -105,7 +116,7 @@ if login_answer == "Y":
 elif login_answer == "N":
     print("Good buy")
 
-post_answer = input("Do you want to write message? Y/N")
+post_answer = input("Do you want to write message? Y/N ")
 if post_answer == "Y":
     if main_user != " ":
         message = input("Write your message {}".format(main_user))
@@ -114,7 +125,7 @@ if post_answer == "Y":
 elif post_answer == "N":
     print("May be next time ...")
 
-follow_answer1 = input("Do you want to follow users? Y/N")
+follow_answer1 = input("Do you want to follow users? Y/N ")
 
 if follow_answer1 == "Y":
     follow_answer2 = input("Which user do you want to follow?")
@@ -123,22 +134,30 @@ if follow_answer1 == "Y":
     else:
         print("We dont have that user in our media")
 
-if follow_answer1 == "N":
+else:
     print('May be next time ...')
 
-follow_answer3 = input("Do you want to unfollow users? Y/N")
+follow_answer3 = input("Do you want to unfollow users? Y/N ")
 
 if follow_answer3 == "Y":
-    follow_answer4 = input("Which user do you want to unfollow?")
+    follow_answer4 = input("Which user do you want to unfollow? ")
     if user_exist(follow_answer4) is not None:
         unfollow_user(main_user, follow_answer4)
     else:
         print("We dont have {} user in our media".format(follow_answer4))
 
+show_posts = input('Do you want to see post of your lovely users? Y/N ')
+
+if show_posts == "Y":
+    show_favorite(main_user)
 
 
+else:
+    print('May be next time ...')
 
+"""
 
+posts_collection.update_many({}, {"$rename": {"post": "message"}})
 print("Posts")
 tasks = posts_collection.find()
 for task in tasks:
@@ -147,6 +166,8 @@ print("Users")
 tasks = users_collection.find()
 for task in tasks:
     print(task)
+    
+"""
 client.close()
 
 
