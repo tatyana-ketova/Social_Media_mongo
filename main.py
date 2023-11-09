@@ -28,4 +28,34 @@ users_collection = database["users"]
 posts_collection = database["posts"]
 
 
+
+def user_registration(username,email,password):
+    data = {"username": username, "email": email, "password": password}
+    insert_result = users_collection.insert_one(data)
+    print("{}, you are registered successfully".format(username))
+
+
+def user_login():
+    pass
+
+def post_messages():
+    pass
+
+def follow_user():
+    pass
+
+def unfollow_user():
+    pass
+
+regist_answer = input("Do you want to registered? Y/N")
+
+
+print("Posts")
+tasks = posts_collection.find()
+for task in tasks:
+        print(task)
+print("Users")
+tasks = users_collection.find()
+for task in tasks:
+        print(task)
 client.close()
