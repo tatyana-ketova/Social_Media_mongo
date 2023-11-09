@@ -32,11 +32,16 @@ posts_collection = database["posts"]
 def user_registration(username,email,password):
     data = {"username": username, "email": email, "password": password}
     insert_result = users_collection.insert_one(data)
-    print("{}, you are registered successfully".format(username))
+    print("{}, you are registered successfully!!!!".format(username))
 
 
-def user_login():
-    pass
+def user_login(username, password):
+    users = users_collection.find_one(username, password)
+    if users == {}:
+        print('there is no user {} os password not right')
+    else:
+        print('You {} are login in successfully'.format(username))
+        return username
 
 def post_messages():
     pass
@@ -48,7 +53,21 @@ def unfollow_user():
     pass
 
 regist_answer = input("Do you want to registered? Y/N")
+if regist_answer == "Y":
+    username = input ("Write your login")
+    email = input("Write your email")
+    password = input("Write your password")
+    user_registration(username,email,password)
+elif regist_answer == "N":
+    print("Good buy")
 
+login_answer = input("Do you want to login in? Y/N")
+if login_answer == "Y":
+    username = input("Write your login")
+    password = input("Write your password")
+    user_login(username, password)
+elif login_answer == "N":
+    print("Good buy")
 
 print("Posts")
 tasks = posts_collection.find()
